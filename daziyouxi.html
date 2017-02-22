@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="jquery.js"></script>
+    <script src="animate.js"></script>
+    <script>
+        var arr=["A","B","C","D","E","F","G","H","I","J","K","L","M"]
+        var arrfang=[]//抽出的字母的数组
+        var fang1=[]//创建的span的数组
+        var speed=1
+        var ggsl=5
+        var fenshu=0
+        var zfenshu=0
+        var kaishi=3
+        $(function() {
+                    var guan = $(".shang")[0]
+                    var guanshu = guan.innerHTML = 1
+                    var life = $(".life1")[0]
+                    var shengming = life.innerHTML
+                    var fen = $(".fen1")[0]
+                    var zfen = $(".zfen1")[0]
+                    getRand(arr, kaishi)
+                    fang(arrfang)
+                    move(fang1)
+                    document.onkeydown = function (e) {
+                        function next() {
+                            speed++;
+                            kaishi++
+                            guanshu++
+                            guan.innerHTML = guanshu
+                            arrfang = []
+                            fang1 = []
+                            ggsl += 5
+                            getRand(arr, kaishi)
+                            fang(arrfang)
+                            move(fang1)
+                        }
+
+                        for (var i = 0; i < fang1.length; i++) {
+                            if (String.fromCharCode(e.keyCode) == fang1[i].innerHTML) {
+                                document.body.removeChild(fang1[i])
+                                fang1.splice(i, 1)
+                                arrfang.splice(i, 1)
+                                fang(getRand(arr, 1))
+                                zfenshu++
+                                fenshu++
+                                fen.innerHTML = fenshu
+                                zfen.innerHTML = zfenshu
+                                if (zfenshu == ggsl) {
+                                    for (var i = 0; i < fang1.length; i++) {
+                                        document.body.removeChild(fang1[i])
+                                        fenshu = 0;
+                                        fen.innerHTML = fenshu
+                                    }
+                                    alert("guoguan")
+                                    next()
+
+                                }
+                            }
+                        }
+                    }
+
+                    function move(bbb) {
+                        var ch = document.documentElement.clientHeight
+                        var t = setInterval(function () {
+                            for (var i = 0; i < bbb.length; i++) {
+                                bbb[i].style.top = bbb[i].offsetTop + speed + "px"
+                                if (bbb[i].style.top > ch - 60) {
+                                    document.body.removeChild(fang1[i])
+                                    fang1.splice(i, 1)
+                                    arrfang.splice(i, 1)
+                                    fang(getRand(arr, 1))
+                                    shengming--;
+                                    life.innerHTML = shengming
+                                    if (shengming < 0) {
+                                        for (var i = 0; i < fang1.length; i++) {
+                                            document.body.removeChild(fang1[i])
+                                        }
+                                        shengming = 0
+                                        life.innerHTML = shengming
+                                        alert("shibai")
+                                        clearInterval(t)
+                                    }
+                                }
+                            }
+                            ;
+                        }, 100)
+                    }
+
+                    function getRand(arr, num) {
+                        var arr111 = []
+                        for (var i = 0; i < num; i++) {
+                            var a = arr[Math.floor(Math.random() * arr.length)]
+                            while (!check1(arrfang, a)) {
+                                var a = arr[Math.floor(Math.random() * arr.length)]
+                            }
+                            arrfang.push(a)
+                            arr111.push(a)
+                        }
+                        return arr111
+                    }
+
+                    function check1(arr, s) {
+                        for (var i = 0; i < arr.length; i++) {
+
+                            if (arr[i] == s) {
+                                return false
+                            }
+                        }
+                        ;
+                        return true
+                    }
+
+                    function fang(arr) {
+                        cw = document.documentElement.clientWidth
+                        for (var i = 0; i < arr.length; i++) {
+                            var span = document.createElement("span")
+                            span.innerHTML = arr[i]
+                            document.body.appendChild(span)
+                            var lefts = 100 + Math.floor(Math.random() * (cw - 200))
+                            var tops = Math.floor(20 * (Math.random())) - 10
+                            span.lefts = lefts
+                            while (checkpos(fang1, lefts)) {
+                                lefts = 100 + Math.floor((Math.random()) * (cw - 200))
+                            }
+                            fang1.push(span)
+                            span.style.cssText = "position:absolute;left:" + lefts + "px;top:" + tops + "px"
+                        }
+                    }
+
+                    function checkpos(arr, s) {
+                        for (var i = 0; i < arr.length; i++) {
+                            if (s > (arr[i].lefts - 16) && s < (arr[i].lefts + 16)) {
+                                return true
+                            }
+                        }
+                        return false
+                    }
+                }
+        )
+    </script>
+    <style>
+        html,body{
+            margin:0;padding: 0;
+            background: black;
+            color: white;
+            overflow: hidden;
+        }
+        .xia{
+            width: 100%;
+            height: 60px;
+            position: fixed;
+            bottom: 0px;
+            background:#64e5fc;
+            /*opacity: 0;*/
+            z-index: 5;
+        }
+        .life,.life1,.fen,.fen1,.zfen,.zfen1{
+            width: 16.6%;
+            text-align: center;
+            line-height: 60px;
+            font-size: 30px;
+            font-weight: bold;
+            float: left;
+            color: black;
+        }
+        .shang{
+            position: absolute;
+            top: 0px;
+            left:50%;
+            margin-left: -50px;
+            width:100px;
+            height: 50px;
+            background: red;
+            text-align: center;
+            line-height: 50px;
+            color: blue;
+        }
+
+    </style>
+</head>
+<body>
+<div class="xia">
+    <div class="life">生命:</div>
+    <div class="life1">3</div>
+    <div class="fen">当前分数</div>
+    <div class="fen1">0</div>
+    <div class="zfen">总分数</div>
+    <div class="zfen1">0</div>
+</div>
+<div class="shang"></div>
+</body>
+</html>
